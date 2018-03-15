@@ -647,24 +647,7 @@ class Layer_Normalization(object):
       norm_inputs = (inputs - m) / tf.sqrt(v + self._epsilon)
       return norm_inputs * self._g + self._b
     
-def orthogonal(shape):
-  flat_shape = (shape[0], np.prod(shape[1:]))
-  a = np.random.normal(0.0, 1.0, flat_shape)
-  u, _, v = np.linalg.svd(a, full_matrices=False)
-  q = u if u.shape == flat_shape else v
-  return q.reshape(shape)
 
-def lstm_ortho_initializer(scale=1.0):
-  def _initializer(shape, dtype=tf.float32, partition_info=None):
-    size_x = shape[0]
-    size_h = shape[1]/4
-    t = np.zeros(shape)
-    t[:, :size_h] = orthogonal([size_x, size_h]) * scale
-    t[:, size_h: size_h*2] = orthogonal([size_x, size_h]) * scale
-    t[:, size_h*2: size_h*3] = orthogonal([size_x, size_h]) * scale
-    t[:, size_h*3: ] = orthogonal([size_x, size_h] * scale)
-    return tf.constant(t,dtype)
-  return _initializer
 
 
 
